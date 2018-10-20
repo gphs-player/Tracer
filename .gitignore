@@ -9,3 +9,7 @@
 /app/build
 /captures
 .externalNativeBuild
+.idea
+.idea/*
+*.DS_Store
+.idea/
