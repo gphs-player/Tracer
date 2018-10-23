@@ -88,10 +88,10 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
                     public void onKeyboardHide() {
                         EditText current = (EditText) getCurrentFocus();
                         if (current!=null && current.getText() != null) {
-                            FileUtils.wirteFile("ACTION_MD::INPUT::("+current.getText().toString()+")\n");
+                            FileUtils.wirteFile("ACTION_MD::INPUT::('"+current.getText().toString()+"',MonkeyDevice.DOWN_AND_UP)\n");
                         }
                         if (isKeyboardShow) {
-                            FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP))\n");
+                            FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
                         }
                         isKeyboardShow = false;
                     }
@@ -114,13 +114,13 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
         switch (keyCode){
             case KeyEvent.KEYCODE_BACK:
                 isKeyboardShow = false;
-                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP))\n");
+                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
                 break;
             case KeyEvent.KEYCODE_ENTER:
-                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_ENTER',MonkeyDevice.DOWN_AND_UP))\n");
+                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_ENTER',MonkeyDevice.DOWN_AND_UP)\n");
                 break;
             case KeyEvent.KEYCODE_DEL:
-                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_DEL',MonkeyDevice.DOWN_AND_UP))\n");
+                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_DEL',MonkeyDevice.DOWN_AND_UP)\n");
                 break;
             default:
                 break;
