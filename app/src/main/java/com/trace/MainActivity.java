@@ -82,6 +82,7 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
                 });
     }
 
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         return super.dispatchKeyEvent(event);
@@ -94,16 +95,8 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.d(TAG, "onKeyDown:" + event.getCharacters() + "\n" + keyCode);
         return super.onKeyDown(keyCode, event);
     }
-
-    @Nullable
-    @Override
-    public View getCurrentFocus() {
-        return super.getCurrentFocus();
-    }
-
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
