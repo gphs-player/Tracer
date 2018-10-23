@@ -13,20 +13,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.trace.framework.Node;
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends Activity implements GestureDetector.OnGestureListener{
+public class MainActivity extends Activity implements GestureDetector.OnGestureListener {
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 10;
     private final String TAG = "MainActivity";
     GestureDetectorCompat detector;
     private Random random;
-    Node node;
-    String fileStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,25 +32,18 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
         getPermission();
         FileUtils.CreateFile();
 
-
-        fileStr = FileUtils.instance().getFileName();
-
         FileUtils.wirteFile(FileUtils.instance().getFileName(), "2018/09/12-14:45:50----onActivityCreated---(x,y)\r\n");
-
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----Activity_Action_Up---(x,y)\r\n");
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----Activity_Action_Up---(x,y)\r\n");
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----Activity_Action_Up---(x,y)\r\n");
 
 
         random = new Random();
         Button btn = findViewById(R.id.btn);
         ListView lv = findViewById(R.id.lv);
-        detector = new GestureDetectorCompat(this,this);
+        detector = new GestureDetectorCompat(this, this);
         detector.setIsLongpressEnabled(false);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this,"Dsafdasf",Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Dsafdasf", Toast.LENGTH_LONG).show();
             }
         });
         List<String> names = new ArrayList<>();
@@ -64,7 +53,7 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
             sb.append(getRandomChar()).append(getRandomChar());
             names.add(sb.toString());
         }
-        ArrayAdapter<String> adapter=new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,names);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, names);
         lv.setAdapter(adapter);
     }
 
@@ -77,37 +66,37 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     @Override
     public boolean onDown(MotionEvent motionEvent) {
-        Log.d(TAG,"onDown:"+motionEvent.getX()+":"+motionEvent.getY());
+        Log.d(TAG, "onDown:" + motionEvent.getX() + ":" + motionEvent.getY());
         return false;
     }
 
     @Override
     public void onShowPress(MotionEvent motionEvent) {
-        Log.d(TAG,"onShowPress:"+motionEvent.getX()+":"+motionEvent.getY());
+        Log.d(TAG, "onShowPress:" + motionEvent.getX() + ":" + motionEvent.getY());
     }
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
-        Log.d(TAG,"onSingleTapUp:"+motionEvent.getX()+":"+motionEvent.getY());
+        Log.d(TAG, "onSingleTapUp:" + motionEvent.getX() + ":" + motionEvent.getY());
         return false;
     }
 
     @Override
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
 
-        Log.d(TAG,"onScroll:"+motionEvent.getX()+":"+motionEvent.getY()+"\nonScroll:"+motionEvent1.getX()+":"+motionEvent1.getY()+"v:"+v+"v1:"+v1);
+        Log.d(TAG, "onScroll:" + motionEvent.getX() + ":" + motionEvent.getY() + "\nonScroll:" + motionEvent1.getX() + ":" + motionEvent1.getY() + "v:" + v + "v1:" + v1);
         return false;
     }
 
     @Override
     public void onLongPress(MotionEvent motionEvent) {
-        Log.d(TAG,"onLongPress:"+motionEvent.getX()+":"+motionEvent.getY());
+        Log.d(TAG, "onLongPress:" + motionEvent.getX() + ":" + motionEvent.getY());
 
     }
 
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        Log.d(TAG,"onFling:"+motionEvent.getX()+":"+motionEvent.getY()+"\nonFling:"+motionEvent1.getX()+":"+motionEvent1.getY()+"v:"+v+"v1:"+v1);
+        Log.d(TAG, "onFling:" + motionEvent.getX() + ":" + motionEvent.getY() + "\nonFling:" + motionEvent1.getX() + ":" + motionEvent1.getY() + "v:" + v + "v1:" + v1);
         return false;
     }
 
