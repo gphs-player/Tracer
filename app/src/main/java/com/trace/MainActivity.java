@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -64,6 +66,20 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, names);
         lv.setAdapter(adapter);
+
+
+        KeyboardStateObserver.getKeyboardStateObserver(this).
+                setKeyboardVisibilityListener(new KeyboardStateObserver.OnKeyboardVisibilityListener() {
+                    @Override
+                    public void onKeyboardShow() {
+                        Toast.makeText(MainActivity.this,"键盘弹出",Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onKeyboardHide() {
+                        Toast.makeText(MainActivity.this,"键盘收回",Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
@@ -81,6 +97,13 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
         Log.d(TAG, "onKeyDown:" + event.getCharacters() + "\n" + keyCode);
         return super.onKeyDown(keyCode, event);
     }
+
+    @Nullable
+    @Override
+    public View getCurrentFocus() {
+        return super.getCurrentFocus();
+    }
+
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
