@@ -14,7 +14,6 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -78,35 +77,38 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
                 setKeyboardVisibilityListener(new KeyboardStateObserver.OnKeyboardVisibilityListener() {
                     @Override
                     public void onKeyboardShow() {
-                        EditText current = (EditText)getCurrentFocus();
+                        EditText current = (EditText) getCurrentFocus();
                         int x = (current.getLeft() + current.getRight()) / 2;
-                        int y = (current.getTop()+current.getBottom()) / 2;
+                        int y = (current.getBottom());
                         isKeyboardShow = true;
                         FileUtils.wirteFile("ACTION_MD::TOUCH::("+x+","+y+",MonkeyDevice.DOWN_AND_UP)\n");
-                        current.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
+                        current.addTextChangedListener(new TextWatcher() {
                             @Override
-                            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                                if (actionId == EditorInfo.IME_ACTION_SEND
-                                        || actionId == EditorInfo.IME_ACTION_DONE
-                                        || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
-                                    FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_ENTER',MonkeyDevice.DOWN_AND_UP)\n");
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                CharSequence chars = s.subSequence(start, start + count);
+                                for (int i = 0; i < chars.length(); i++) {
+                                    CharSequence ch = chars.subSequence(i, i);
+                                    int code = KeyEvent.keyCodeFromString(ch.toString());
+                                    FileUtils.wirteFile("ACTION_MD::PRESS::('"+code+"',MonkeyDevice.DOWN_AND_UP)\n");
                                 }
-                                return false;
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+
                             }
                         });
                     }
 
                     @Override
                     public void onKeyboardHide() {
-                        EditText current = (EditText) getCurrentFocus();
-                        if (current!=null && current.getText() != null) {
-                            String s = current.getText().toString();
-                            s = s.trim().replace("\n", "\\n");
-                            s = s.replaceAll(" ", "_");
-                            FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
-                            FileUtils.wirteFile("ACTION_MD::INPUT::('"+s+"',MonkeyDevice.DOWN_AND_UP)\n");
-                            FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
-                        }
+                        FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
                         if (isKeyboardShow) {
                             FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
                         }
