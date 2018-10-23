@@ -14,6 +14,7 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -77,11 +78,22 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
                 setKeyboardVisibilityListener(new KeyboardStateObserver.OnKeyboardVisibilityListener() {
                     @Override
                     public void onKeyboardShow() {
-                        View current = getCurrentFocus();
+                        EditText current = (EditText)getCurrentFocus();
                         int x = (current.getLeft() + current.getRight()) / 2;
                         int y = (current.getTop()+current.getBottom()) / 2;
                         isKeyboardShow = true;
                         FileUtils.wirteFile("ACTION_MD::TOUCH::("+x+","+y+",MonkeyDevice.DOWN_AND_UP)\n");
+                        current.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                            @Override
+                            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                                if (actionId == EditorInfo.IME_ACTION_SEND
+                                        || actionId == EditorInfo.IME_ACTION_DONE
+                                        || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
+                                    FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_ENTER',MonkeyDevice.DOWN_AND_UP)\n");
+                                }
+                                return false;
+                            }
+                        });
                     }
 
                     @Override
