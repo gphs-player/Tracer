@@ -38,41 +38,42 @@ public class FileUtils {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    private void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
-    public boolean isFileCreate() {
+    private boolean getFileCreate() {
         return fileCreate;
     }
 
-    public void setFileCreate(boolean fileCreate) {
+    private void setFileCreate(boolean fileCreate) {
         this.fileCreate = fileCreate;
     }
 
     public static void CreateFile() {
-        if (!FileUtils.instance().isFileCreate()){
-            boolean created = false;
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
-            String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
-            String filePath = getSDPath() + DIRECTORY_NAME + FILE_NAME + date + FILE;
-            try {
-                File file = new File(filePath);
-                File parentFile = file.getParentFile();
-                if (!parentFile.exists()) {
-                    if (!parentFile.mkdirs()) {
-                        return;
-                    }
-                }
-                if (!file.exists()) {
-                    created = file.createNewFile();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            FileUtils.instance().setFileName(filePath);
-            FileUtils.instance().setFileCreate(created);
+        if (FileUtils.instance().getFileCreate()) {
+            return;
         }
+        boolean created = false;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
+        String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
+        String filePath = getSDPath() + DIRECTORY_NAME + FILE_NAME + date + FILE;
+        try {
+            File file = new File(filePath);
+            File parentFile = file.getParentFile();
+            if (!parentFile.exists()) {
+                if (!parentFile.mkdirs()) {
+                    return;
+                }
+            }
+            if (!file.exists()) {
+                created = file.createNewFile();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FileUtils.instance().setFileName(filePath);
+        FileUtils.instance().setFileCreate(created);
     }
 
     private static final String DIRECTORY_NAME = "/SLog/";
@@ -94,13 +95,13 @@ public class FileUtils {
      * 追加文件：使用FileWriter
      */
     public static void wirteFile(String content) {
-        if (!FileUtils.instance().isFileCreate()) {
+        if (!FileUtils.instance().getFileCreate()) {
             FileUtils.CreateFile();
             return;
         }
         long start = System.currentTimeMillis();
-        Log.e("Time", "-------------------------");
-        Log.e("Time", "start=" + System.currentTimeMillis());
+        Log.d("Time", "-------------------------");
+        Log.d("Time", "start=" + System.currentTimeMillis());
         try {
             // 打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
             FileWriter writer = new FileWriter(FileUtils.instance().getFileName(), true);
@@ -108,9 +109,9 @@ public class FileUtils {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e("wirteFile", e.toString());
+            Log.d("wirteFile", e.toString());
         }
-        Log.e("Time", "end=" + System.currentTimeMillis());
-        Log.e("Time", "time=" + (System.currentTimeMillis() - start));
+        Log.d("Time", "end=" + System.currentTimeMillis());
+        Log.d("Time", "time=" + (System.currentTimeMillis() - start));
     }
 }

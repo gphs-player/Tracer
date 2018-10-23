@@ -40,7 +40,6 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //申请权限和创建文件
         random = new Random();
         Button btn = findViewById(R.id.btn);
         ListView lv = findViewById(R.id.lv);
@@ -78,16 +77,16 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.d(TAG, "onKeyDown:" + event.getCharacters()+"\n"+keyCode);
+        Log.d(TAG, "onKeyDown:" + event.getCharacters() + "\n" + keyCode);
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         detector.onTouchEvent(ev);
-        if (!stack.isEmpty()&&ev.getAction()==MotionEvent.ACTION_UP){
+        if (!stack.isEmpty() && ev.getAction() == MotionEvent.ACTION_UP) {
             Rect pop = stack.pop();
-            FileUtils.wirteFile(sdf.format(new Date()) + "device.drag(("+pop.left+","+pop.top+"),("+pop.right+","+pop.bottom+"),1,1)\n");
+            FileUtils.wirteFile(sdf.format(new Date()) + "device.drag((" + pop.left + "," + pop.top + "),(" + pop.right + "," + pop.bottom + "),1,1)\n");
             stack.clear();
         }
         return super.dispatchTouchEvent(ev);
@@ -107,13 +106,13 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
-        FileUtils.wirteFile(sdf.format(new Date()) + "device.touch("+motionEvent.getX()+","+motionEvent.getY()+",MonkeyDevice.DOWN_AND_UP)\n");
+        FileUtils.wirteFile(sdf.format(new Date()) + "device.touch(" + motionEvent.getX() + "," + motionEvent.getY() + ",MonkeyDevice.DOWN_AND_UP)\n");
         return false;
     }
 
     @Override
     public boolean onScroll(MotionEvent ev, MotionEvent ev1, float v, float v1) {
-        stack.push(new Rect((int)ev.getX(),(int)ev.getY(),(int)ev1.getX(),(int)ev1.getY()));
+        stack.push(new Rect((int) ev.getX(), (int) ev.getY(), (int) ev1.getX(), (int) ev1.getY()));
         return false;
     }
 
