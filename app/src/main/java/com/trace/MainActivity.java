@@ -89,8 +89,11 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
                         EditText current = (EditText) getCurrentFocus();
                         if (current!=null && current.getText() != null) {
                             String s = current.getText().toString();
-                            s = s.replace("\n", "\\n");
-                            FileUtils.wirteFile("ACTION_MD::INPUT::("+s+")\n");
+                            s = s.trim().replace("\n", "\\n");
+                            s = s.replaceAll(" ", "_");
+                            FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
+                            FileUtils.wirteFile("ACTION_MD::INPUT::('"+s+"',MonkeyDevice.DOWN_AND_UP)\n");
+                            FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
                         }
                         if (isKeyboardShow) {
                             FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
@@ -165,7 +168,7 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
-        FileUtils.wirteFile("ACTION_MD::TOUCH::("+motionEvent.getX()+","+motionEvent.getY()+",MonkeyDevice.DOWN_AND_UP)\n");
+        FileUtils.wirteFile("ACTION_MD::TOUCH::("+(int)motionEvent.getX()+","+(int)motionEvent.getY()+",MonkeyDevice.DOWN_AND_UP)\n");
         return false;
     }
 
