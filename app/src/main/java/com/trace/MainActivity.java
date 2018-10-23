@@ -1,5 +1,6 @@
 package com.trace;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
@@ -11,58 +12,27 @@ import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends Activity {
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 10;
+
     Node node;
     String fileStr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fileStr = FileUtils.getSDPath() + FileUtils.FILE_NAME;
-        if (!FileUtils.fileCheck(fileStr)) {
-            try {
-                File file = new File(fileStr);
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("Exception", e.toString());
-            }
-        }
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----onActivityCreated---(x,y)\r\n");
+        //申请权限和创建文件
+        getPermission();
+        FileUtils.CreateFile();
+
+
+        fileStr = FileUtils.instance().getFileName();
+
+        FileUtils.wirteFile(FileUtils.instance().getFileName(), "2018/09/12-14:45:50----onActivityCreated---(x,y)\r\n");
+
         FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----Activity_Action_Up---(x,y)\r\n");
         FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----Activity_Action_Up---(x,y)\r\n");
         FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----Activity_Action_Up---(x,y)\r\n");
-//        getApplication().registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
-//            @Override
-//            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-//                node.setClassLifeCycle(Node.LifeCycle.CREATE);
-//            }
-//
-//            @Override
-//            public void onActivityStarted(Activity activity) {
-//                node.setClassLifeCycle(Node.LifeCycle.START);
-//            }
-//
-//            @Override
-//            public void onActivityResumed(Activity activity) {
-//            }
-//
-//            @Override
-//            public void onActivityPaused(Activity activity) {
-//            }
-//
-//            @Override
-//            public void onActivityStopped(Activity activity) {
-//            }
-//
-//            @Override
-//            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-//            }
-//
-//            @Override
-//            public void onActivityDestroyed(Activity activity) {
-//            }
-//        });
-//        gestureDetector = new GestureDetector(this, gestureProxy);
     }
 
     @Override
@@ -95,11 +65,17 @@ public class MainActivity extends Activity {
         FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----onActivityDestroyed---(x,y)\r\n");
     }
 
-    //    GestureDetector gestureDetector;
-//    GestureProxy gestureProxy;
+    private void getPermission() {
+        PermissionUtils.needPermission(this, REQUEST_WRITE_EXTERNAL_STORAGE, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, new PermissionUtils.OnPermissionListener() {
+            @Override
+            public void onPermissionGranted() {
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        return gestureDetector.onTouchEvent(event);
-//    }
+            }
+
+            @Override
+            public void onPermissionDenied() {
+
+            }
+        });
+    }
 }

@@ -51,26 +51,28 @@ public class FileUtils {
     }
 
     public static void CreateFile() {
-        boolean fileCreate = false;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
-        String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
-        String filePath = getSDPath() + DIRECTORY_NAME + FILE_NAME + date + FILE;
-        try {
-            File file = new File(filePath);
-            File parentFile = file.getParentFile();
-            if (!parentFile.exists()) {
-                if (!parentFile.mkdirs()) {
-                    return;
+        if (!FileUtils.instance().isFileCreate()){
+            boolean created = false;
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
+            String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
+            String filePath = getSDPath() + DIRECTORY_NAME + FILE_NAME + date + FILE;
+            try {
+                File file = new File(filePath);
+                File parentFile = file.getParentFile();
+                if (!parentFile.exists()) {
+                    if (!parentFile.mkdirs()) {
+                        return;
+                    }
                 }
+                if (!file.exists()) {
+                    created = file.createNewFile();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            if (!file.exists()) {
-                fileCreate = file.createNewFile();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            FileUtils.instance().setFileName(filePath);
+            FileUtils.instance().setFileCreate(created);
         }
-        FileUtils.instance().setFileName(filePath);
-        FileUtils.instance().setFileCreate(fileCreate);
     }
 
     private static final String DIRECTORY_NAME = "/SLog/";
