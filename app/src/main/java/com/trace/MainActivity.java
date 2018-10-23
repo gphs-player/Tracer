@@ -32,7 +32,7 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
         getPermission();
         FileUtils.CreateFile();
 
-        FileUtils.wirteFile(FileUtils.instance().getFileName(), "2018/09/12-14:45:50----onActivityCreated---(x,y)\r\n");
+        FileUtils.wirteFile("2018/09/12-14:45:50----onActivityCreated---(x,y)\r\n");
 
 
         random = new Random();

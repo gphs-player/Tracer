@@ -93,7 +93,7 @@ public class FileUtils {
     /**
      * 追加文件：使用FileWriter
      */
-    public static void wirteFile(String fileName, String content) {
+    public static void wirteFile(String content) {
         if (!FileUtils.instance().isFileCreate()) {
             FileUtils.CreateFile();
             return;
@@ -103,7 +103,7 @@ public class FileUtils {
         Log.e("Time", "start=" + System.currentTimeMillis());
         try {
             // 打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
-            FileWriter writer = new FileWriter(fileName, true);
+            FileWriter writer = new FileWriter(FileUtils.instance().getFileName(), true);
             writer.write(content);
             writer.close();
         } catch (IOException e) {
