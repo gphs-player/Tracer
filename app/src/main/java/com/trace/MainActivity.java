@@ -88,7 +88,9 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
                     public void onKeyboardHide() {
                         EditText current = (EditText) getCurrentFocus();
                         if (current!=null && current.getText() != null) {
-                            FileUtils.wirteFile("ACTION_MD::INPUT::('"+current.getText().toString()+"',MonkeyDevice.DOWN_AND_UP)\n");
+                            String s = current.getText().toString();
+                            s = s.replace("\n", "\\n");
+                            FileUtils.wirteFile("ACTION_MD::INPUT::("+s+")\n");
                         }
                         if (isKeyboardShow) {
                             FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
