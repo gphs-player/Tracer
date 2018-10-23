@@ -11,6 +11,7 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -33,9 +34,9 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
     private Dialog dialog;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss   ", Locale.CHINESE);
 
-    private Stack<Rect> stack = new Stack<>();
+    private Stack<WindowBehavior> stack = new Stack<>();
 
-
+    long timestamp = Long.MIN_VALUE;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,11 +84,20 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction()==MotionEvent.ACTION_DOWN){
+            if (timestamp!=Long.MIN_VALUE) {
+                float time = (System.currentTimeMillis()-timestamp)/1000.0f;
+                FileUtils.wirteFile("ACTION_MR::SLEEP::("+time+")\n");
+            }
+            timestamp = System.currentTimeMillis();
+        }
         detector.onTouchEvent(ev);
-        if (!stack.isEmpty() && ev.getAction() == MotionEvent.ACTION_UP) {
-            Rect pop = stack.pop();
-            FileUtils.wirteFile(sdf.format(new Date()) + "device.drag((" + pop.left + "," + pop.top + "),(" + pop.right + "," + pop.bottom + "),1,1)\n");
+        if (!stack.isEmpty()&&ev.getAction()==MotionEvent.ACTION_UP){
+            WindowBehavior pop = stack.pop();
+            float time = (System.currentTimeMillis()-timestamp)/1000.0f;
+            FileUtils.wirteFile("ACTION_MD::DRAG::(("+pop.x1+","+pop.y1+"),("+pop.x2+","+pop.y2+"),"+time+",10)\n");
             stack.clear();
+            timestamp = System.currentTimeMillis();
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -106,13 +116,13 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
-        FileUtils.wirteFile(sdf.format(new Date()) + "device.touch(" + motionEvent.getX() + "," + motionEvent.getY() + ",MonkeyDevice.DOWN_AND_UP)\n");
+        FileUtils.wirteFile("ACTION_MD::TOUCH::("+motionEvent.getX()+","+motionEvent.getY()+",MonkeyDevice.DOWN_AND_UP)\n");
         return false;
     }
 
     @Override
     public boolean onScroll(MotionEvent ev, MotionEvent ev1, float v, float v1) {
-        stack.push(new Rect((int) ev.getX(), (int) ev.getY(), (int) ev1.getX(), (int) ev1.getY()));
+        stack.push(new WindowBehavior(ev.getX(),ev.getY(),ev1.getX(),ev1.getY()));
         return false;
     }
 

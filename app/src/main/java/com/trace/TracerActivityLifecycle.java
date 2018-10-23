@@ -21,29 +21,30 @@ public class TracerActivityLifecycle implements Application.ActivityLifecycleCal
     public void onActivityCreated(Activity activity, Bundle bundle) {
         getPermission(activity);
         FileUtils.CreateFile();
-        FileUtils.wirteFile(sdf.format(new Date()) + activity.getComponentName().getClassName() + "   onActivityCreated\n");
+        FileUtils.wirteFile("LIFECYCLE::"+activity.getComponentName().flattenToString()+"::onCreated\n");
+
     }
 
     @Override
     public void onActivityStarted(Activity activity) {
-        FileUtils.wirteFile(sdf.format(new Date()) + activity.getComponentName().getClassName() + "   onActivityStarted\n");
+        FileUtils.wirteFile("LIFECYCLE::"+activity.getComponentName().flattenToString()+"::Started\n");
     }
 
     @Override
     public void onActivityResumed(Activity activity) {
-        FileUtils.wirteFile(sdf.format(new Date()) + activity.getComponentName().getClassName() + "   onActivityResumed\n");
+        FileUtils.wirteFile("LIFECYCLE::"+activity.getComponentName().flattenToString()+"::Resumed\n");
 
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-        FileUtils.wirteFile(sdf.format(new Date()) + activity.getComponentName().getClassName() + "   onActivityPaused\n");
+        FileUtils.wirteFile("LIFECYCLE::"+activity.getComponentName().flattenToString()+"::Paused\n");
 
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
-        FileUtils.wirteFile(sdf.format(new Date()) + activity.getComponentName().getClassName() + "   onActivityStopped\n");
+        FileUtils.wirteFile("LIFECYCLE::"+activity.getComponentName().flattenToString()+"::Stopped\n");
 
     }
 
@@ -54,7 +55,7 @@ public class TracerActivityLifecycle implements Application.ActivityLifecycleCal
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        FileUtils.wirteFile(sdf.format(new Date()) + activity.getComponentName().getClassName() + "   onActivityDestroyed\n");
+        FileUtils.wirteFile("LIFECYCLE::"+activity.getComponentName().flattenToString()+"::Destroyed\n");
 
     }
 
