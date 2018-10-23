@@ -2,10 +2,13 @@ package com.trace;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -14,27 +17,30 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
+import java.util.Stack;
 
 public class MainActivity extends Activity implements GestureDetector.OnGestureListener {
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 10;
     private final String TAG = "MainActivity";
     GestureDetectorCompat detector;
     private Random random;
+    private Dialog dialog;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd-HH:mm:ss   ", Locale.CHINESE);
+
+    private Stack<Rect> stack = new Stack<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //申请权限和创建文件
-        getPermission();
-        FileUtils.CreateFile();
-
-        FileUtils.wirteFile("2018/09/12-14:45:50----onActivityCreated---(x,y)\r\n");
-
-
         random = new Random();
         Button btn = findViewById(R.id.btn);
         ListView lv = findViewById(R.id.lv);
@@ -44,6 +50,9 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "Dsafdasf", Toast.LENGTH_LONG).show();
+                dialog = new Dialog(MainActivity.this);
+                dialog.setContentView(R.layout.view_text_show_dialog);
+                dialog.show();
             }
         });
         List<String> names = new ArrayList<>();
@@ -58,8 +67,29 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
     }
 
     @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d(TAG, "onKeyDown:" + event.getCharacters()+"\n"+keyCode);
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         detector.onTouchEvent(ev);
+        if (!stack.isEmpty()&&ev.getAction()==MotionEvent.ACTION_UP){
+            Rect pop = stack.pop();
+            FileUtils.wirteFile(sdf.format(new Date()) + "device.drag(("+pop.left+","+pop.top+"),("+pop.right+","+pop.bottom+"),1,1)\n");
+            stack.clear();
+        }
         return super.dispatchTouchEvent(ev);
     }
 
@@ -77,14 +107,13 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
-        Log.d(TAG, "onSingleTapUp:" + motionEvent.getX() + ":" + motionEvent.getY());
+        FileUtils.wirteFile(sdf.format(new Date()) + "device.touch("+motionEvent.getX()+","+motionEvent.getY()+",MonkeyDevice.DOWN_AND_UP)\n");
         return false;
     }
 
     @Override
-    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-
-        Log.d(TAG, "onScroll:" + motionEvent.getX() + ":" + motionEvent.getY() + "\nonScroll:" + motionEvent1.getX() + ":" + motionEvent1.getY() + "v:" + v + "v1:" + v1);
+    public boolean onScroll(MotionEvent ev, MotionEvent ev1, float v, float v1) {
+        stack.push(new Rect((int)ev.getX(),(int)ev.getY(),(int)ev1.getX(),(int)ev1.getY()));
         return false;
     }
 
