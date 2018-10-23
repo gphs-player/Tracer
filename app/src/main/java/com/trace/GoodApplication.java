@@ -1,6 +1,10 @@
 package com.trace;
 
+import android.Manifest;
 import android.app.Application;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 /**
  * Created by pxw on 2018/10/23.
@@ -10,6 +14,7 @@ public class GoodApplication extends Application implements Thread.UncaughtExcep
     @Override
     public void onCreate() {
         super.onCreate();
+
         registerActivityLifecycleCallbacks(new TracerActivityLifecycle());
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
@@ -21,4 +26,7 @@ public class GoodApplication extends Application implements Thread.UncaughtExcep
         }
         android.os.Process.killProcess(android.os.Process.myPid());
     }
+
+
 }
+

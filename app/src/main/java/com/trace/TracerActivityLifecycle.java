@@ -60,7 +60,7 @@ public class TracerActivityLifecycle implements Application.ActivityLifecycleCal
     }
 
     private void getPermission(Activity activity) {
-        PermissionUtils.needPermission(activity, 10, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, new PermissionUtils.OnPermissionListener() {
+        PermissionUtils.needPermission(activity, 10, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionUtils.OnPermissionListener() {
             @Override
             public void onPermissionGranted() {
 

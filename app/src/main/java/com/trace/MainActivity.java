@@ -7,6 +7,8 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -17,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
@@ -39,6 +42,8 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
     private Stack<WindowBehavior> stack = new Stack<>();
 
     long timestamp = Long.MIN_VALUE;
+    private boolean isKeyboardShow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,12 +77,23 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
                 setKeyboardVisibilityListener(new KeyboardStateObserver.OnKeyboardVisibilityListener() {
                     @Override
                     public void onKeyboardShow() {
-                        Toast.makeText(MainActivity.this,"键盘弹出",Toast.LENGTH_SHORT).show();
+                        View current = getCurrentFocus();
+                        int x = (current.getLeft() + current.getRight()) / 2;
+                        int y = (current.getTop()+current.getBottom()) / 2;
+                        isKeyboardShow = true;
+                        FileUtils.wirteFile("ACTION_MD::TOUCH::("+x+","+y+",MonkeyDevice.DOWN_AND_UP)\n");
                     }
 
                     @Override
                     public void onKeyboardHide() {
-                        Toast.makeText(MainActivity.this,"键盘收回",Toast.LENGTH_SHORT).show();
+                        EditText current = (EditText) getCurrentFocus();
+                        if (current!=null && current.getText() != null) {
+                            FileUtils.wirteFile("ACTION_MD::INPUT::("+current.getText().toString()+")\n");
+                        }
+                        if (isKeyboardShow) {
+                            FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP))\n");
+                        }
+                        isKeyboardShow = false;
                     }
                 });
     }
@@ -95,8 +111,23 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode){
+            case KeyEvent.KEYCODE_BACK:
+                isKeyboardShow = false;
+                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP))\n");
+                break;
+            case KeyEvent.KEYCODE_ENTER:
+                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_ENTER',MonkeyDevice.DOWN_AND_UP))\n");
+                break;
+            case KeyEvent.KEYCODE_DEL:
+                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_DEL',MonkeyDevice.DOWN_AND_UP))\n");
+                break;
+            default:
+                break;
+        }
         return super.onKeyDown(keyCode, event);
     }
+
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
