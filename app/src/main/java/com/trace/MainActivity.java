@@ -1,36 +1,54 @@
 package com.trace;
 
-import android.app.Activity;
-import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.trace.framework.Node;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
+    private final String TAG = "MainActivity";
+    GestureDetectorCompat detector;
+    private Random random;
     Node node;
     String fileStr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fileStr = FileUtils.getSDPath() + FileUtils.FILE_NAME;
-        if (!FileUtils.fileCheck(fileStr)) {
-            try {
-                File file = new File(fileStr);
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("Exception", e.toString());
+        random = new Random();
+        Button btn = findViewById(R.id.btn);
+        ListView lv = findViewById(R.id.lv);
+        detector = new GestureDetectorCompat(this,this);
+        detector.setIsLongpressEnabled(false);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this,"Dsafdasf",Toast.LENGTH_LONG).show();
             }
+        });
+        List<String> names = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 100; i++) {
+            sb.setLength(0);
+            sb.append(getRandomChar()).append(getRandomChar());
+            names.add(sb.toString());
         }
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----onActivityCreated---(x,y)\r\n");
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----Activity_Action_Up---(x,y)\r\n");
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----Activity_Action_Up---(x,y)\r\n");
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----Activity_Action_Up---(x,y)\r\n");
+        ArrayAdapter<String> adapter=new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,names);
+        lv.setAdapter(adapter);
 //        getApplication().registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
 //            @Override
 //            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -66,34 +84,70 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----onActivityStarted---(x,y)\r\n");
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        detector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
+    }
+
+
+    @Override
+    public boolean onDown(MotionEvent motionEvent) {
+        Log.d(TAG,"onDown:"+motionEvent.getX()+":"+motionEvent.getY());
+        return false;
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----onActivityResumed---(x,y)\r\n");
+    public void onShowPress(MotionEvent motionEvent) {
+        Log.d(TAG,"onShowPress:"+motionEvent.getX()+":"+motionEvent.getY());
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----onActivityPaused---(x,y)\r\n");
+    public boolean onSingleTapUp(MotionEvent motionEvent) {
+        Log.d(TAG,"onSingleTapUp:"+motionEvent.getX()+":"+motionEvent.getY());
+        return false;
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----onActivityStopped---(x,y)\r\n");
+    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+
+        Log.d(TAG,"onScroll:"+motionEvent.getX()+":"+motionEvent.getY()+"\nonScroll:"+motionEvent1.getX()+":"+motionEvent1.getY()+"v:"+v+"v1:"+v1);
+        return false;
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        FileUtils.wirteFile(fileStr, "2018/09/12-14:45:50----onActivityDestroyed---(x,y)\r\n");
+    public void onLongPress(MotionEvent motionEvent) {
+        Log.d(TAG,"onLongPress:"+motionEvent.getX()+":"+motionEvent.getY());
+
     }
+
+    @Override
+    public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        Log.d(TAG,"onFling:"+motionEvent.getX()+":"+motionEvent.getY()+"\nonFling:"+motionEvent1.getX()+":"+motionEvent1.getY()+"v:"+v+"v1:"+v1);
+        return false;
+    }
+
+    private char getRandomChar() {
+        String str = "";
+        int hightPos; //
+        int lowPos;
+
+        hightPos = (176 + Math.abs(random.nextInt(39)));
+        lowPos = (161 + Math.abs(random.nextInt(93)));
+
+        byte[] b = new byte[2];
+        b[0] = (Integer.valueOf(hightPos)).byteValue();
+        b[1] = (Integer.valueOf(lowPos)).byteValue();
+
+        try {
+            str = new String(b, "GBK");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            System.out.println("错误");
+        }
+
+        return str.charAt(0);
+    }
+
 
     //    GestureDetector gestureDetector;
 //    GestureProxy gestureProxy;
