@@ -1,6 +1,5 @@
-package com.trace;
+package com.trace.framework;
 
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -33,13 +32,13 @@ public class MyGestureDetectorListener implements GestureDetector.OnGestureListe
 
     @Override
     public boolean onSingleTapUp(MotionEvent motionEvent) {
-        FileUtils.wirteFile("ACTION_MD::TOUCH::("+(int)motionEvent.getX()+","+(int)motionEvent.getY()+",MonkeyDevice.DOWN_AND_UP)\n");
+        TracerUtils.wirteFile("ACTION_MD::TOUCH::(" + (int) motionEvent.getX() + "," + (int) motionEvent.getY() + ",MonkeyDevice.DOWN_AND_UP)\n");
         return false;
     }
 
     @Override
     public boolean onScroll(MotionEvent ev, MotionEvent ev1, float v, float v1) {
-        stack.push(new WindowBehavior(ev.getX(),ev.getY(),ev1.getX(),ev1.getY()));
+        stack.push(new WindowBehavior(ev.getX(), ev.getY(), ev1.getX(), ev1.getY()));
         return false;
     }
 

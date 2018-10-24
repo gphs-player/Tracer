@@ -1,9 +1,8 @@
-package com.trace;
+package com.trace.framework;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.os.Build;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -13,6 +12,7 @@ import android.view.accessibility.AccessibilityEvent;
 
 public class MyBoringService extends AccessibilityService {
     private final String TAG = "TAG";
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -21,9 +21,10 @@ public class MyBoringService extends AccessibilityService {
         config.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED;
         config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
         if (Build.VERSION.SDK_INT >= 18) {
-            config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS|AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;;
+            config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS | AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
+            ;
         }
-        config.packageNames = new String[] {"com.trace"};
+        config.packageNames = new String[]{"com.trace"};
         setServiceInfo(config);
     }
 
@@ -41,11 +42,11 @@ public class MyBoringService extends AccessibilityService {
                 //界面文字改动
                 CharSequence beforeText = event.getBeforeText();
                 CharSequence charSequence = event.getText().get(0);
-                if (charSequence.length()>beforeText.length()) {
+                if (charSequence.length() > beforeText.length()) {
                     String replace = charSequence.toString().replace(beforeText, "");
-                    FileUtils.wirteFile("ACTION_MR::SLEEP::(0.5)\n");
-                    FileUtils.wirteFile("ACTION_MD::INPUT::("+replace+")\n");
-                    FileUtils.wirteFile("ACTION_MR::SLEEP::(0.5)\n");
+                    TracerUtils.wirteFile("ACTION_MR::SLEEP::(0.5)\n");
+                    TracerUtils.wirteFile("ACTION_MD::INPUT::(" + replace + ")\n");
+                    TracerUtils.wirteFile("ACTION_MR::SLEEP::(0.5)\n");
                 }
                 break;
         }

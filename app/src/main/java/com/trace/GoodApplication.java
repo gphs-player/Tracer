@@ -1,13 +1,11 @@
 package com.trace;
 
-import android.Manifest;
 import android.app.Application;
 import android.app.Dialog;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
-import android.view.Window;
+
+import com.trace.framework.TracerActivityLifecycle;
+import com.trace.framework.TracerUtils;
 
 import java.lang.reflect.Method;
 
@@ -33,7 +31,7 @@ public class GoodApplication extends Application implements Thread.UncaughtExcep
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         if (e != null) {
-            FileUtils.wirteFile(e.getMessage());
+            TracerUtils.wirteFile(e.getMessage());
         }
         android.os.Process.killProcess(android.os.Process.myPid());
     }

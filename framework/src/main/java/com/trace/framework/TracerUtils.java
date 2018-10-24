@@ -1,44 +1,45 @@
-package com.trace;
+package com.trace.framework;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
-import android.view.KeyEvent;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * @author guanzhong
  * @since 2018/10/20
  */
-public class FileUtils {
+public class TracerUtils {
     private static final int KEYCODE_BACK = 4;
     private static final int KEYCODE_ENTER = 66;
     private static final int KEYCODE_DEL = 67;
-    private static FileUtils fileUtils = null;
+    private static TracerUtils tracerUtils = null;
 
-    private FileUtils() {
+    private TracerUtils() {
     }
 
-    public static FileUtils instance() {
-        if (fileUtils == null) {
-            synchronized (FileUtils.class) {
-                if (fileUtils == null) {
-                    fileUtils = new FileUtils();
+    public static TracerUtils instance() {
+        if (tracerUtils == null) {
+            synchronized (TracerUtils.class) {
+                if (tracerUtils == null) {
+                    tracerUtils = new TracerUtils();
                 }
             }
         }
-        return fileUtils;
+        return tracerUtils;
     }
 
     private boolean fileCreate;
     private String fileName;
 
-    public String getFileName() {
+    private String getFileName() {
         return fileName;
     }
 
@@ -55,13 +56,13 @@ public class FileUtils {
     }
 
     public static void CreateFile() {
-        if (FileUtils.instance().getFileCreate()) {
+        if (TracerUtils.instance().getFileCreate()) {
             return;
         }
         boolean created = false;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
-        String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
-        String filePath = getSDPath() + DIRECTORY_NAME + FILE_NAME + date + FILE;
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
+//        String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
+        String filePath = getSDPath() + DIRECTORY_NAME + FILE_NAME + "tracer" + FILE;
         try {
             File file = new File(filePath);
             File parentFile = file.getParentFile();
@@ -76,8 +77,8 @@ public class FileUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        FileUtils.instance().setFileName(filePath);
-        FileUtils.instance().setFileCreate(created);
+        TracerUtils.instance().setFileName(filePath);
+        TracerUtils.instance().setFileCreate(created);
     }
 
     private static final String DIRECTORY_NAME = "/SLog/";
@@ -99,8 +100,8 @@ public class FileUtils {
      * 追加文件：使用FileWriter
      */
     public static void wirteFile(String content) {
-        if (!FileUtils.instance().getFileCreate()) {
-            FileUtils.CreateFile();
+        if (!TracerUtils.instance().getFileCreate()) {
+            TracerUtils.CreateFile();
             return;
         }
         long start = System.currentTimeMillis();
@@ -108,7 +109,7 @@ public class FileUtils {
         Log.d("Time", "start=" + System.currentTimeMillis());
         try {
             // 打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
-            FileWriter writer = new FileWriter(FileUtils.instance().getFileName(), true);
+            FileWriter writer = new FileWriter(TracerUtils.instance().getFileName(), true);
             writer.write(content);
             writer.close();
         } catch (IOException e) {
@@ -120,19 +121,33 @@ public class FileUtils {
     }
 
 
-    public static void writeKeyDown(int keyCode){
-        switch (keyCode){
+    public static void writeKeyDown(int keyCode) {
+        switch (keyCode) {
             case KEYCODE_BACK:
-                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
+                TracerUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
                 break;
             case KEYCODE_ENTER:
-                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_ENTER',MonkeyDevice.DOWN_AND_UP)\n");
+                TracerUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_ENTER',MonkeyDevice.DOWN_AND_UP)\n");
                 break;
             case KEYCODE_DEL:
-                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_DEL',MonkeyDevice.DOWN_AND_UP)\n");
+                TracerUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_DEL',MonkeyDevice.DOWN_AND_UP)\n");
                 break;
             default:
                 break;
         }
+    }
+
+    public static void startAccessibilityService(final Activity activity) {
+        new AlertDialog.Builder(activity)
+                .setTitle("开启辅助功能")
+                .setMessage("使用此项功能需要您开启辅助功能")
+                .setPositiveButton("立即开启", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 隐式调用系统设置界面
+                        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                        activity.startActivity(intent);
+                    }
+                }).create().show();
     }
 }

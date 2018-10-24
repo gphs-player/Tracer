@@ -1,4 +1,4 @@
-package com.trace;
+package com.trace.framework;
 
 /**
  * 行为操作
@@ -6,7 +6,7 @@ package com.trace;
  */
 
 public class WindowBehavior {
-    public int x1,y1,x2,y2;
+    public int x1, y1, x2, y2;
 
     public WindowBehavior(int x1, int y1) {
         this.x1 = x1;

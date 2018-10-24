@@ -2,30 +2,21 @@ package com.trace;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.view.GestureDetectorCompat;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
+
+import com.trace.framework.MyGestureDetectorListener;
+import com.trace.framework.TracerUtils;
+import com.trace.framework.WindowBehavior;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-import java.util.Stack;
 
 public class MainActivity extends Activity {
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 10;
@@ -42,6 +33,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getPermission();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         random = new Random();
@@ -52,7 +44,7 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        FileUtils.writeKeyDown(keyCode);
+        TracerUtils.writeKeyDown(keyCode);
         return super.onKeyDown(keyCode, event);
     }
 
@@ -62,7 +54,7 @@ public class MainActivity extends Activity {
         if (ev.getAction()==MotionEvent.ACTION_DOWN){
             if (timestamp!=Long.MIN_VALUE) {
                 float time = (System.currentTimeMillis()-timestamp)/1000.0f;
-                FileUtils.wirteFile("ACTION_MR::SLEEP::("+time+")\n");
+                TracerUtils.wirteFile("ACTION_MR::SLEEP::("+time+")\n");
             }
             timestamp = System.currentTimeMillis();
         }
@@ -70,14 +62,26 @@ public class MainActivity extends Activity {
         if (ev.getAction()==MotionEvent.ACTION_UP&&!detectorListener.getStack().isEmpty()){
             WindowBehavior pop = detectorListener.getStack().pop();
             float time = (System.currentTimeMillis()-timestamp)/1000.0f;
-            FileUtils.wirteFile("ACTION_MD::DRAG::(("+pop.x1+","+pop.y1+"),("+pop.x2+","+pop.y2+"),"+time+",10)\n");
+            TracerUtils.wirteFile("ACTION_MD::DRAG::(("+pop.x1+","+pop.y1+"),("+pop.x2+","+pop.y2+"),"+time+",10)\n");
             detectorListener.getStack().clear();
             timestamp = System.currentTimeMillis();
         }
         return super.dispatchTouchEvent(ev);
     }
 
+    private void getPermission(Activity activity) {
+        PermissionUtils.needPermission(activity, 10, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionUtils.OnPermissionListener() {
+            @Override
+            public void onPermissionGranted() {
 
+            }
+
+            @Override
+            public void onPermissionDenied() {
+
+            }
+        });
+    }
 
     private char getRandomChar() {
         String str = "";
@@ -115,19 +119,6 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void startAccessibilityService() {
-        new AlertDialog.Builder(this)
-                .setTitle("开启辅助功能")
-                .setIcon(R.mipmap.ic_launcher)
-                .setMessage("使用此项功能需要您开启辅助功能")
-                .setPositiveButton("立即开启", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // 隐式调用系统设置界面
-                        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                        startActivity(intent);
-                    }
-                }).create().show();
-    }
+
 
 }
