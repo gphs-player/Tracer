@@ -15,7 +15,6 @@ public class TracerActivityLifecycle implements Application.ActivityLifecycleCal
 
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
-        TracerUtils.CreateFile();
         TracerUtils.wirteFile("LIFECYCLE::" + activity.getComponentName().flattenToString() + "::onCreated\n");
     }
 

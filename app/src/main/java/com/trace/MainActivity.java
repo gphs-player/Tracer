@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getPermission();
+        TracerUtils.CreateFile();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         random = new Random();
@@ -109,7 +110,7 @@ public class MainActivity extends Activity {
         PermissionUtils.needPermission(this, REQUEST_WRITE_EXTERNAL_STORAGE, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, new PermissionUtils.OnPermissionListener() {
             @Override
             public void onPermissionGranted() {
-
+                TracerUtils.CreateFile();
             }
 
             @Override
