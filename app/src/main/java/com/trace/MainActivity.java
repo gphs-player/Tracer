@@ -2,30 +2,26 @@ package com.trace;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
-import android.graphics.Rect;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.provider.Settings;
 import android.support.v4.view.GestureDetectorCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -43,6 +39,7 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
 
     long timestamp = Long.MIN_VALUE;
     private boolean isKeyboardShow;
+    private TextView tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +47,22 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
         setContentView(R.layout.activity_main);
         random = new Random();
         Button btn = findViewById(R.id.btn);
+        Button btn2 = findViewById(R.id.btn2);
+        tv = findViewById(R.id.tv);
         ListView lv = findViewById(R.id.lv);
         detector = new GestureDetectorCompat(this, this);
         detector.setIsLongpressEnabled(false);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Dsafdasf", Toast.LENGTH_LONG).show();
-                dialog = new Dialog(MainActivity.this);
-                dialog.setContentView(R.layout.view_text_show_dialog);
-                dialog.show();
+                startAccessibilityService();
+            }
+        });
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                char c = getRandomChar();
+                tv.setText(String.valueOf(c));
             }
         });
         List<String> names = new ArrayList<>();
@@ -69,54 +72,58 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
             sb.append(getRandomChar()).append(getRandomChar());
             names.add(sb.toString());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, names);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.item_ed,R.id.tv, names);
         lv.setAdapter(adapter);
 
 
-        KeyboardStateObserver.getKeyboardStateObserver(this).
-                setKeyboardVisibilityListener(new KeyboardStateObserver.OnKeyboardVisibilityListener() {
-                    @Override
-                    public void onKeyboardShow() {
-                        EditText current = (EditText) getCurrentFocus();
-                        int x = (current.getLeft() + current.getRight()) / 2;
-                        int y = (current.getBottom());
-                        isKeyboardShow = true;
-                        FileUtils.wirteFile("ACTION_MD::TOUCH::("+x+","+y+",MonkeyDevice.DOWN_AND_UP)\n");
-                        FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
-                        current.addTextChangedListener(new TextWatcher() {
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                            }
-
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                CharSequence chars = s.subSequence(start, start + count);
-                                for (int i = 0; i < chars.length(); i++) {
-                                    CharSequence ch = chars.subSequence(i, i);
-                                    int code = KeyEvent.keyCodeFromString(ch.toString());
-                                    FileUtils.wirteFile("ACTION_MD::PRESS::('"+code+"',MonkeyDevice.DOWN_AND_UP)\n");
-                                }
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable s) {
-
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onKeyboardHide() {
-                        FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
-                        if (isKeyboardShow) {
-                            FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
-                        }
-                        isKeyboardShow = false;
-                    }
-                });
+//        KeyboardStateObserver.getKeyboardStateObserver(this).
+//                setKeyboardVisibilityListener(new KeyboardStateObserver.OnKeyboardVisibilityListener() {
+//                    @Override
+//                    public void onKeyboardShow() {
+//                        EditText current = (EditText) getCurrentFocus();
+//                        int x = (current.getLeft() + current.getRight()) / 2;
+//                        int y = (current.getBottom());
+//                        isKeyboardShow = true;
+//                        FileUtils.wirteFile("ACTION_MD::TOUCH::("+x+","+y+",MonkeyDevice.DOWN_AND_UP)\n");
+//                        FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
+//                        current.addTextChangedListener(new TextWatcher() {
+//                            @Override
+//                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                                CharSequence chars = s.subSequence(start, start + count);
+//                                for (int i = 0; i < chars.length(); i++) {
+//                                    CharSequence ch = chars.subSequence(i, i);
+//                                    int code = KeyEvent.keyCodeFromString(ch.toString());
+//                                    FileUtils.wirteFile("ACTION_MD::PRESS::('"+code+"',MonkeyDevice.DOWN_AND_UP)\n");
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void afterTextChanged(Editable s) {
+//
+//                            }
+//                        });
+//                    }
+//
+//                    @Override
+//                    public void onKeyboardHide() {
+//                        FileUtils.wirteFile("ACTION_MR::SLEEP::("+1.0+")\n");
+//                        if (isKeyboardShow) {
+//                            FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
+//                        }
+//                        isKeyboardShow = false;
+//                    }
+//                });
     }
 
+    @Override
+    public boolean dispatchKeyShortcutEvent(KeyEvent event) {
+        return super.dispatchKeyShortcutEvent(event);
+    }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -239,4 +246,20 @@ public class MainActivity extends Activity implements GestureDetector.OnGestureL
             }
         });
     }
+
+    private void startAccessibilityService() {
+        new AlertDialog.Builder(this)
+                .setTitle("开启辅助功能")
+                .setIcon(R.mipmap.ic_launcher)
+                .setMessage("使用此项功能需要您开启辅助功能")
+                .setPositiveButton("立即开启", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 隐式调用系统设置界面
+                        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                        startActivity(intent);
+                    }
+                }).create().show();
+    }
+
 }
