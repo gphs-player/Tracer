@@ -2,6 +2,7 @@ package com.trace;
 
 import android.os.Environment;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -15,6 +16,9 @@ import java.util.Locale;
  * @since 2018/10/20
  */
 public class FileUtils {
+    private static final int KEYCODE_BACK = 4;
+    private static final int KEYCODE_ENTER = 66;
+    private static final int KEYCODE_DEL = 67;
     private static FileUtils fileUtils = null;
 
     private FileUtils() {
@@ -113,5 +117,22 @@ public class FileUtils {
         }
         Log.d("Time", "end=" + System.currentTimeMillis());
         Log.d("Time", "time=" + (System.currentTimeMillis() - start));
+    }
+
+
+    public static void writeKeyDown(int keyCode){
+        switch (keyCode){
+            case KEYCODE_BACK:
+                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_BACK',MonkeyDevice.DOWN_AND_UP)\n");
+                break;
+            case KEYCODE_ENTER:
+                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_ENTER',MonkeyDevice.DOWN_AND_UP)\n");
+                break;
+            case KEYCODE_DEL:
+                FileUtils.wirteFile("ACTION_MD::PRESS::('KEYCODE_DEL',MonkeyDevice.DOWN_AND_UP)\n");
+                break;
+            default:
+                break;
+        }
     }
 }

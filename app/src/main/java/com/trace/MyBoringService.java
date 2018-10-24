@@ -41,7 +41,12 @@ public class MyBoringService extends AccessibilityService {
                 //界面文字改动
                 CharSequence beforeText = event.getBeforeText();
                 CharSequence charSequence = event.getText().get(0);
-
+                if (charSequence.length()>beforeText.length()) {
+                    String replace = charSequence.toString().replace(beforeText, "");
+                    FileUtils.wirteFile("ACTION_MR::SLEEP::(0.5)\n");
+                    FileUtils.wirteFile("ACTION_MD::INPUT::("+replace+")\n");
+                    FileUtils.wirteFile("ACTION_MR::SLEEP::(0.5)\n");
+                }
                 break;
         }
 
